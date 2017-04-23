@@ -1,0 +1,34 @@
+Cancer,Abbr,Number_total_mutations
+adrenocortical cancer,ACC,13129
+bladder urothelial carcinoma,BLCA,135077
+brain lower grade glioma,LGG,27721
+breast invasive carcinoma,BRCA,90490
+cervical & endocervical cancer,CESC,46547
+cholangiocarcinoma,CHOL,4228
+colon adenocarcinoma,COAD,125522
+diffuse large B-cell lymphoma,DLBC,16918
+esophageal carcinoma,ESCA,41378
+glioblastoma multiforme,GBM,25131
+head & neck squamous cell carcinoma,HNSC,115338
+kidney chromophobe,KICH,3835
+kidney clear cell carcinoma,KIRC,26000
+kidney papillary cell carcinoma,KIRP,16951
+liver hepatocellular carcinoma,LIHC,53777
+lung adenocarcinoma,LUAD,244440
+lung squamous cell carcinoma,LUSC,65305
+mesothelioma,MESO,8577
+ovarian serous cystadenocarcinoma,OV,24092
+pancreatic adenocarcinoma,PAAD,30355
+pheochromocytoma & paraganglioma,PCPG,4088
+prostate adenocarcinoma,PRAD,12348
+rectum adenocarcinoma,READ,34259
+sarcoma,SARC,30391
+skin cutaneous melanoma,SKCM,422553
+stomach adenocarcinoma,STAD,148520
+testicular germ cell tumor,TGCT,5598
+thymoma,THYM,6326
+thyroid carcinoma,THCA,13084
+uterine carcinosarcoma,UCS,9149
+uterine corpus endometrioid carcinoma,UCEC,184861
+uveal melanoma,UVM,2174
+acute myeloid leukemia,LAML,
