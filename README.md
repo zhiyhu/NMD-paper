@@ -32,12 +32,7 @@ Using these rules, we can predict whether a called mutation will elicit NMD on t
 
 ## Related R package masonmd
 
-<<<<<<< HEAD
-To predict the NMD-elicit mutations in your own dataset, please try our R package [masonmd] (https://github.com/ZYBunnyHu/masonmd)
-=======
-To predict the NMD-elicit mutations in your own dataset, please try our R package [masonmd](https://github.com/ZYBunnyHu/masonmd).
->>>>>>> e5f5d41f3d28acff0adc894e080863e6e2099bce
-
+To predict the NMD-elicit mutations in your own dataset, please try our R package [masonmd] (https://github.com/ZYBunnyHu/masonmd).
 
 In R or Rstudio, use the following codes to install the masonmd package directly from Github:
 
