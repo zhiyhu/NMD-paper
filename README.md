@@ -15,6 +15,7 @@ Zhiyuan Hu1,2,3, Christopher Yau3,4\* and Ahmed Ashour Ahmed1,2\*
 ## Background
 
 Herein the repo contains the raw data and coding to reproduce the results in the manusript:
+
 Z. Hu, C. Yau and A. Ahmed (2017) *A pan-cancer genome-wide analysis reveals tumour dependencies by induction of non-sense mediated decay* (Under review).
 
 While some mutations can introduce premature termination codons (PTCs) into genes, nonsense mediated decay (NMD) can detect these PTCs and then eliminate the abnormal transcripts. PTCs and NMD play important roles in genetic diseases and cancers.
@@ -31,7 +32,7 @@ Using these rules, we can predict whether a called mutation will elicit NMD on t
 
 ## Related R package masonmd
 
-To predict the NMD-elicit mutations in your own dataset, please try our R package masonmd [https://github.com/ZYBunnyHu/masonmd]
+To predict the NMD-elicit mutations in your own dataset, please try our R package [masonmd](https://github.com/ZYBunnyHu/masonmd)
 
 
 In R or Rstudio, use the following codes to install the masonmd package directly from Github:
@@ -74,3 +75,6 @@ In total, eight R scripts are included in the `R` subdirectory. You can run them
 A manuscript detailing our work has been submitted for publication and a bioRxiv submission is in preparation:
 
 Z. Hu, C. Yau and A. Ahmed (2017) *A pan-cancer genome-wide analysis reveals tumour dependencies by induction of non-sense mediated decay* (Under review).
+
+
+
