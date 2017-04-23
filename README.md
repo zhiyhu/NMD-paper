@@ -31,7 +31,7 @@ Using these rules, we can predict whether a called mutation will elicit NMD on t
 
 ## Related R package masonmd
 
-To predict the NMD-elicit mutations in your own dataset, please try our R package masonmd [https://github.com/ZYBunnyHu/masonmd]
+To predict the NMD-elicit mutations in your own dataset, please try our R package [masonmd] (https://github.com/ZYBunnyHu/masonmd)
 
 
 In R or Rstudio, use the following codes to install the masonmd package directly from Github:
@@ -60,9 +60,9 @@ In total, eight R scripts are included in the `R` subdirectory. You can run them
 
 1. `00_PANCAN_function.R` contains the functions that are used in the prediction or analysis.
 
-2. `01_PANCAN_data.R` is about loading data and preprocessing. 
+2. `01_PANCAN_data.R` is about loading data and preprocessing.
 
-3. `02_PANCAN_classify.R` is about prediction of NMD-elicit mutations. 
+3. `02_PANCAN_classify.R` is about prediction of NMD-elicit mutations.
 
 4. `06_PANCAN_figures_manuscript.R` generates the figures in the manuscript
 
