@@ -31,14 +31,9 @@ df$Cancers <- paste(df$Cancers,"\nn=" ,df$sample,sep="")
 df$Cancers <- factor(df$Cancers, levels = unique(df$Cancers))
 
 # **Figure. Total number of mutations and the number of NMD mutation from 24 cancers. The top plot shows the number of all mutation and the bottom one shows NMD mutations.----
-ggplot(data=df, aes(y = Freq, x = Cancers)) +
-  geom_bar(position = "dodge", stat = "identity")+ facet_wrap(~type,ncol = 1,scales = "free") +#scale_fill_manual(values =colour_cancer)+
-  xlab("")+ylab("Number of mutations")
-
-ggplot(data=df[df$type=="NMD mutations",], aes(y = Freq, fill =Cancers,x="")) +
-  geom_bar(width = 1, stat = "identity")+ coord_polar(theta = "y", start=0) +facet_grid(.~type) +#scale_fill_manual(values =colour_cancer)+
-  xlab("")+ylab("Number of mutations")
-ggplot(data=df[df$type=="All mutations",], aes(y = Freq, fill = Cancers,x=Cancers)) +geom_bar(width = 1, stat = "identity")
+ggplot(data=df[df$type=="All mutations",], 
+       aes(y = Freq, fill = Cancers,x = Cancers)) +
+    geom_bar(width = 1, stat = "identity")
 
 cancer_type$n_analysed_mut <- df$Freq[df$type=="All mutations"][match(cancer_type$Abbr,df$Cancers[df$type=="All mutations"])]
 cancer_type$n_nmd_mut <- df$Freq[df$type=="NMD mutations"][match(cancer_type$Abbr,df$Cancers[df$type=="NMD mutations"])]
@@ -58,19 +53,19 @@ df2$Freq<-as.factor(df2$Freq)
 df2$effect <- as.character(df2$effect) #%>% as.numeric()
 df2$nmd.detail2<- as.character(df2$nmd.detail2)# %>% as.numeric()
 
-##* repeat with only tp53----
-df3<-data.frame(table(pancan_mut_all[pancan_mut_all$gene=="TP53" & (pancan_mut_all$effect %in% effect),c("effect","nmd.detail2","cancer_abbr")]))
-# Set columns ready for ggplot
-df3$Freq<-as.factor(df3$Freq)
-df3$effect <- as.character(df3$effect) #%>% as.numeric()
-df3$nmd.detail2<- as.character(df3$nmd.detail2)# %>% as.numeric()
-# **Figure. Novel annotation on NMD in TP53 across cancers.----
-# plot a frequency heat plot using ggplot
-ggplot(df3,aes(x=nmd.detail2,y=effect)) +geom_tile(aes(fill=as.numeric(Freq))) +
-  geom_text(aes(label=Freq))+xlab(label = "NMD classification")+
-  ylab(label = "TCGA variant classification")+ggtitle("TP53")+facet_grid(.~cancer_abbr)+ theme(legend.position="none")+scale_fill_gradient2()+ 
-  theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line =  element_blank(),panel.border = element_blank())+
-  labs(fill="")
+# ##* repeat with only tp53----
+# df3<-data.frame(table(pancan_mut_all[pancan_mut_all$gene=="TP53" & (pancan_mut_all$effect %in% effect),c("effect","nmd.detail2","cancer_abbr")]))
+# # Set columns ready for ggplot
+# df3$Freq<-as.factor(df3$Freq)
+# df3$effect <- as.character(df3$effect) #%>% as.numeric()
+# df3$nmd.detail2<- as.character(df3$nmd.detail2)# %>% as.numeric()
+# # **Figure. Novel annotation on NMD in TP53 across cancers.----
+# # plot a frequency heat plot using ggplot
+# ggplot(df3,aes(x=nmd.detail2,y=effect)) +geom_tile(aes(fill=as.numeric(Freq))) +
+#   geom_text(aes(label=Freq))+xlab(label = "NMD classification")+
+#   ylab(label = "TCGA variant classification")+ggtitle("TP53")+facet_grid(.~cancer_abbr)+ theme(legend.position="none")+scale_fill_gradient2()+ 
+#   theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line =  element_blank(),panel.border = element_blank())+
+#   labs(fill="")
 
 ## table of cancers ##------
 cancer_df <-data.frame (table(unique(pancan_mut_all[,c("sample","cancer_abbr")])[,"cancer_abbr"]))
@@ -101,8 +96,8 @@ cancer_df$ratio_NMD_mut_in_TSG_mut <- cancer_df$NMD_mut_in_TSG/cancer_df$mut
 cancer_df$ratio_NMD_mut_in_TSG_sample_sample <-cancer_df$NMD_mut_in_TSG_sample/cancer_df$n_sample
 cancer_df[is.na(cancer_df)] <- 0
 
-ggplot(data=cancer_df,aes(x=as.numeric(mut),y=as.numeric(NMD_mut)))+geom_point()+
-  geom_text(data=cancer_df, aes(x=as.numeric(mut)+10000,y=as.numeric(NMD_mut)+150, label = cancer), size=4) 
+# ggplot(data=cancer_df,aes(x=as.numeric(mut),y=as.numeric(NMD_mut)))+geom_point()+
+#   geom_text(data=cancer_df, aes(x=as.numeric(mut)+10000,y=as.numeric(NMD_mut)+150, label = cancer), size=4) 
 
 # **Percentage of samples with NMD-mutated TSG#------
 cancer_df$cancer <- factor(cancer_df$cancer, levels = cancer_df[order(cancer_df$ratio_NMD_mut_in_TSG_sample_sample,decreasing = F),"cancer"])
@@ -115,7 +110,6 @@ ggplot(data=cancer_df[!is.na(cancer_df$ratio_TP53_NMD_mut_sample_sample),],
   geom_bar(stat="identity", position=position_dodge())+theme(legend.position="none")+
   labs(x="Cancers",y="Number of samples with NMD-mutated TP53/samples per cancer")
 
-fisher.test(cancer_df[,c("mut","NMD_mut")])
 #--------------------------------------------------
 
 ## table of samples ##------
@@ -153,9 +147,8 @@ sample_df2$sample <- rownames(sample_df2)
 sample_df2$cancer <- sample_df$cancer[match(sample_df2$sample,sample_df$sample)]
 sample_df2[rownames(sample_df2) %in% sample_df$sample[sample_df$cancer=="COAD"],]
 cor(sample_df2[,1:16])
-heatmap(cor(sample_df2[,1:16]))
+
 sample_df2$mut_PLOD1 <- NA
-# sample_df2$mut_PLOD1 <- pancan_mut_all[pancan_mut_all$gene=="POLD1","effect"]
 sample_df2$TCGA.identifier <- substr(sample_df2$sample,start = 1,stop = 12)
 sample_df2 <- merge(sample_df,sample_df2,by="sample")
 
@@ -163,36 +156,36 @@ sample_df2 <- merge(sample_df,sample_df2,by="sample")
 # use mononucleotide_and_dinucleotide_marker_panel_analysis_status---------
 
 sample_df2$MSS <- NA
-sample_df2$MSS[match(clin_coad$TCGA.identifier,sample_df2$TCGA.identifier)] <-as.character (clin_coad$mononucleotide_and_dinucleotide_marker_panel_analysis_status)
-sample_df2$MSS[match(clin_esca$TCGA.identifier,sample_df2$TCGA.identifier)] <- as.character (clin_esca$mononucleotide_and_dinucleotide_marker_panel_analysis_status)
-sample_df2$MSS[match(clin_stad$TCGA.identifier,sample_df2$TCGA.identifier)] <- as.character (clin_stad$mononucleotide_and_dinucleotide_marker_panel_analysis_status)
-sample_df2$MSS[match(clin_ucec$TCGA.identifier,sample_df2$TCGA.identifier)] <- as.character (clin_ucec$mononucleotide_and_dinucleotide_marker_panel_analysis_status)
-table(sample_df2[,c("cancer.x","MSS")])
-sample_mss<-sample_df2[!is.na(sample_df2$MSS),]
-
-sample_mss$mut_PLOD1 <- F
-sample_mss$mut_POLE <- F
-sample_mss$mut_PLOD1[sample_mss$sample%in%pancan_mut_all$sample[pancan_mut_all$gene=="PLOD1"]] <- T
-sample_mss$mut_POLE[sample_mss$sample%in%pancan_mut_all$sample[pancan_mut_all$gene=="POLE"]] <- T
+# sample_df2$MSS[match(clin_coad$TCGA.identifier,sample_df2$TCGA.identifier)] <-as.character (clin_coad$mononucleotide_and_dinucleotide_marker_panel_analysis_status)
+# sample_df2$MSS[match(clin_esca$TCGA.identifier,sample_df2$TCGA.identifier)] <- as.character (clin_esca$mononucleotide_and_dinucleotide_marker_panel_analysis_status)
+# sample_df2$MSS[match(clin_stad$TCGA.identifier,sample_df2$TCGA.identifier)] <- as.character (clin_stad$mononucleotide_and_dinucleotide_marker_panel_analysis_status)
+# sample_df2$MSS[match(clin_ucec$TCGA.identifier,sample_df2$TCGA.identifier)] <- as.character (clin_ucec$mononucleotide_and_dinucleotide_marker_panel_analysis_status)
+# table(sample_df2[,c("cancer.x","MSS")])
+# sample_mss<-sample_df2[!is.na(sample_df2$MSS),]
+# 
+# sample_mss$mut_PLOD1 <- F
+# sample_mss$mut_POLE <- F
+# sample_mss$mut_PLOD1[sample_mss$sample%in%pancan_mut_all$sample[pancan_mut_all$gene=="PLOD1"]] <- T
+# sample_mss$mut_POLE[sample_mss$sample%in%pancan_mut_all$sample[pancan_mut_all$gene=="POLE"]] <- T
 
 # plot the relationship of microsatelite stability, number of mutations and NMD mutations------
 
-ggplot(data=sample_mss,aes(x=as.numeric(mut),y=as.numeric(NMD_mut),col=as.factor(MSS),shape=paste(mut_PLOD1,mut_POLE)))+geom_point(alpha=0.6,size=2)+
-  scale_x_log10() +
-  scale_y_log10()+geom_abline(slope = 1,intercept = 0,col="grey",lty=2)+labs(x="Number of mutations in one sample",y="Number of NMD mutations in one sample")+
-  geom_vline(xintercept = 0)+
-  geom_hline(yintercept = 0)+theme_bw()+  theme(panel.grid.major = element_blank(),
-                                                panel.grid.minor = element_blank(),
-                                                panel.border = element_blank(),
-                                                panel.background = element_blank(),
-                                                legend.key = element_rect( color = "white")) +theme(legend.position="bottom")+facet_wrap(~cancer.x,ncol = 2)
-
-ggplot(data=sample_mss,aes(x=as.numeric(NMD_mut),y=as.numeric(IFI),col=as.factor(MSS)))+geom_point(alpha=0.6,size=1)+
-  scale_x_log10() +
-  scale_y_log10()+facet_wrap(~cancer.x,ncol = 2)
-ggplot(data=sample_mss,aes(y=as.numeric(mut),x=cancer.y,fill=paste(as.factor(MSS),mut_PLOD1|mut_POLE)))+geom_boxplot(alpha=0.6)+scale_y_log10()
-  scale_x_log10() +
-  +geom_abline(slope = 1,intercept = 0,col="grey",lty=2)+labs(x="Number of mutations in one sample",y="Number of NMD mutations in one sample")+
+# ggplot(data=sample_mss,aes(x=as.numeric(mut),y=as.numeric(NMD_mut),col=as.factor(MSS),shape=paste(mut_PLOD1,mut_POLE)))+geom_point(alpha=0.6,size=2)+
+#   scale_x_log10() +
+#   scale_y_log10()+geom_abline(slope = 1,intercept = 0,col="grey",lty=2)+labs(x="Number of mutations in one sample",y="Number of NMD mutations in one sample")+
+#   geom_vline(xintercept = 0)+
+#   geom_hline(yintercept = 0)+theme_bw()+  theme(panel.grid.major = element_blank(),
+#                                                 panel.grid.minor = element_blank(),
+#                                                 panel.border = element_blank(),
+#                                                 panel.background = element_blank(),
+#                                                 legend.key = element_rect( color = "white")) +theme(legend.position="bottom")+facet_wrap(~cancer.x,ncol = 2)
+# 
+# ggplot(data=sample_mss,aes(x=as.numeric(NMD_mut),y=as.numeric(IFI),col=as.factor(MSS)))+geom_point(alpha=0.6,size=1)+
+#   scale_x_log10() +
+#   scale_y_log10()+facet_wrap(~cancer.x,ncol = 2)
+# ggplot(data=sample_mss,aes(y=as.numeric(mut),x=cancer.y,fill=paste(as.factor(MSS),mut_PLOD1|mut_POLE)))+geom_boxplot(alpha=0.6)+scale_y_log10()
+#   scale_x_log10() +
+#   +geom_abline(slope = 1,intercept = 0,col="grey",lty=2)+labs(x="Number of mutations in one sample",y="Number of NMD mutations in one sample")+
 
 # Ratio of samples with NMD-mutated TSGs across cancers-----
 mean=1943/6924
@@ -211,54 +204,18 @@ for(i in 1:24)
   cor.rls.cor[i] <- cor.test( x = sample_df[sample_df$cancer==cancer_type$Abbr[i],c("mut")],y= sample_df[sample_df$cancer==cancer_type$Abbr[i],c("NMD_mut")])$estimate  
 }
 View(data.frame(cancer=cancer_type$Abbr,pvalue=cor.rls.pvalue,pearson=cor.rls.cor,p.adj=p.adjust(cor.rls.pvalue,method = "BH")))
-# Call:
-#   glm(formula = NMD_mut ~ mut + cancer, data = sample_df)
-# 
-# Deviance Residuals: 
-#   Min       1Q   Median       3Q      Max  
-# -306.08    -2.72    -0.50     1.20   475.97  
-# 
-# Coefficients:
-#   Estimate Std. Error t value Pr(>|t|)    
-# (Intercept)  1.240e+00  2.104e+00   0.589  0.55566    
-# mut          4.518e-02  3.484e-04 129.682  < 2e-16 ***
-#   cancerBLCA  -3.126e-01  2.333e+00  -0.134  0.89343    
-# cancerBRCA   5.794e-01  2.199e+00   0.264  0.79214    
-# cancerCESC  -2.420e+00  2.549e+00  -0.949  0.34253    
-# cancerCOAD   1.108e+01  2.434e+00   4.551 5.42e-06 ***
-#   cancerDLBC  -9.912e+00  3.580e+00  -2.769  0.00564 ** 
-#   cancerESCA  -6.094e-01  2.571e+00  -0.237  0.81267    
-# cancerGBM   -1.835e+00  2.388e+00  -0.768  0.44226    
-# cancerHNSC  -4.003e-01  2.282e+00  -0.175  0.86080    
-# cancerKIRC   6.940e+00  2.513e+00   2.762  0.00575 ** 
-#   cancerKIRP   7.954e-01  2.611e+00   0.305  0.76068    
-# cancerLGG   -1.795e+00  2.281e+00  -0.787  0.43142    
-# cancerLIHC   4.010e+00  2.346e+00   1.710  0.08737 .  
-# cancerLUAD  -4.579e-01  2.274e+00  -0.201  0.84039    
-# cancerLUSC  -3.181e+00  2.587e+00  -1.230  0.21881    
-# cancerOV    -2.910e+00  2.346e+00  -1.240  0.21488    
-# cancerPAAD  -3.576e+00  2.666e+00  -1.341  0.17981    
-# cancerPRAD  -1.336e+00  2.374e+00  -0.563  0.57369    
-# cancerREAD   2.951e+00  2.810e+00   1.050  0.29364    
-# cancerSARC  -2.493e+00  2.445e+00  -1.020  0.30799    
-# cancerSKCM  -1.583e+01  2.308e+00  -6.860 7.40e-12 ***
-#   cancerSTAD   1.839e+01  2.415e+00   7.613 2.99e-14 ***
-#   cancerTHCA  -1.279e+00  2.286e+00  -0.560  0.57570    
-# cancerUCEC   1.203e+00  2.468e+00   0.487  0.62593    
-
-p.adjust(summary(lr)$coefficients[,4],method = "BH")
 
 # histological_type------
 table(sample_df$histological_type)
 # Kidney Clear Cell Renal Carcinoma 
 # 212 
-sample_df$histological_type <-KIRC_clinicalMatrix$neoplasm_histologic_grade[match(sample_df$sample,KIRC_clinicalMatrix$sampleID)]
-table(sample_df$histological_type)
-# G1 G2 G3 G4 GX 
-# 1  8 95 80 24  4 
-ggplot(data=sample_df[sample_df$cancer=="kidney clear cell carcinoma",],aes(x=as.numeric(mut),y=as.numeric(NMD_mut),col=as.factor(histological_type)))+geom_point(alpha=0.4)+
-  scale_x_log10() +
-  scale_y_log10()+geom_abline(slope = 1,intercept = 0,col="grey") +theme(legend.position="right")+labs(x="Number of mutations in one sample",y="Number of NMD mutations in one sample",col="histological type")
+# sample_df$histological_type <-KIRC_clinicalMatrix$neoplasm_histologic_grade[match(sample_df$sample,KIRC_clinicalMatrix$sampleID)]
+# table(sample_df$histological_type)
+# # G1 G2 G3 G4 GX 
+# # 1  8 95 80 24  4 
+# ggplot(data=sample_df[sample_df$cancer=="kidney clear cell carcinoma",],aes(x=as.numeric(mut),y=as.numeric(NMD_mut),col=as.factor(histological_type)))+geom_point(alpha=0.4)+
+#   scale_x_log10() +
+#   scale_y_log10()+geom_abline(slope = 1,intercept = 0,col="grey") +theme(legend.position="right")+labs(x="Number of mutations in one sample",y="Number of NMD mutations in one sample",col="histological type")
 
 # good transfer from symbol to id------
 SYMBOL2EG <- org.Hs.egSYMBOL2EG
@@ -269,33 +226,33 @@ SYMBOL2EG <- as.list(SYMBOL2EG[mapped_genes])
 gene.universe.id <- SYMBOL2EG[match(names(gene.universe),names(SYMBOL2EG))]
 gene.universe.id <- sapply(gene.universe.id,function(x) return(x[1])) # map between gene id to symbor
 
-gene_go <- names(gene.universe.id)[match(gene_go,gene.universe.id)]
-gene_go <- na.omit(gene_go)
+# gene_go <- names(gene.universe.id)[match(gene_go,gene.universe.id)]
+# gene_go <- na.omit(gene_go)
 
 # gene.universe[match(gene_go,names(gene.universe))]
 
 ## which genes are more affected by NMD
 
 # these genes have more than 1 mutations in 
-gene.universe<- U_pan2$Z_score
-names(gene.universe) <- U_pan2$gene
-GOdata <- new("topGOdata", ontology ="BP", allGenes = gene.universe, geneSel = function(x) x<0.2, 
-              description = "Test", annot = annFUN.org, mapping = "org.Hs.eg.db", ID = "symbol")
-resultFisher <- runTest(GOdata, algorithm = "classic", statistic = "fisher")
-resultKS.elim <- runTest(GOdata, algorithm = "elim", statistic = "ks")
-resultweight <- runTest(GOdata, algorithm = "weight", statistic = "fisher")
+# gene.universe<- U_pan2$Z_score
+# names(gene.universe) <- U_pan2$gene
+# GOdata <- new("topGOdata", ontology ="BP", allGenes = gene.universe, geneSel = function(x) x<0.2, 
+#               description = "Test", annot = annFUN.org, mapping = "org.Hs.eg.db", ID = "symbol")
+# resultFisher <- runTest(GOdata, algorithm = "classic", statistic = "fisher")
+# resultKS.elim <- runTest(GOdata, algorithm = "elim", statistic = "ks")
+# resultweight <- runTest(GOdata, algorithm = "weight", statistic = "fisher")
+# 
+# table <- GenTable(GOdata, classicFisher = resultFisher,weightfisher = resultweight, topNodes = 500 ,numChar=100)
+# # write.csv(table,file = "pan_cancer_results/twoBackgroundDiff_GOEA.csv")               
+# showSigOfNodes(GOdata, score(resultweight), firstSigNodes = 5, useInfo = 'all')
 
-table <- GenTable(GOdata, classicFisher = resultFisher,weightfisher = resultweight, topNodes = 500 ,numChar=100)
-# write.csv(table,file = "pan_cancer_results/twoBackgroundDiff_GOEA.csv")               
-showSigOfNodes(GOdata, score(resultweight), firstSigNodes = 5, useInfo = 'all')
-
-## Which genes are more frequently NMD mutated?------
-write.csv(U_pan, file = "panCan12_results/MWW_table_pancancer20160917.csv",row.names = F)
-ggplot(aes(x=n_nmd_mut, y = Z_score, col=as.factor(n_nmd_mut)),data=U_pan2)+geom_point()+
-  theme(legend.position="none")+
-  labs(x="Number of NMD mutations",y= "Z score (relative expression levels)")+
-  geom_text(aes(label=as.character(paste(gene,cancer))),hjust=0, vjust=0,size=2,data = U_pan2[U_pan2$n_nmd_mut>10,])
-
+# ## Which genes are more frequently NMD mutated?------
+# write.csv(U_pan, file = "data/table/MWW_table_pancancer20160917.csv",row.names = F)
+# ggplot(aes(x=n_nmd_mut, y = Z_score, col=as.factor(n_nmd_mut)),data=U_pan2)+geom_point()+
+#   theme(legend.position="none")+
+#   labs(x="Number of NMD mutations",y= "Z score (relative expression levels)")+
+#   geom_text(aes(label=as.character(paste(gene,cancer))),hjust=0, vjust=0,size=2,data = U_pan2[U_pan2$n_nmd_mut>10,])
+# 
 
 ## frequency of NMD mutations in 24 cancer types-----------
 #--------------------------------------------------
@@ -365,27 +322,12 @@ for(i in 24:2)
 {
   colSeperate[i] <- sum(colSeperate[1:(i-1)])
 }
-# pancan_col <- c("#F8766D" "#ED813E" "#DE8C00" "#CD9600" "#B79F00" "#9DA700" "#7CAE00" "#49B500" "#00BA38" "#00BE67" "#00C08B"
-# "#00C1A9" "#00BFC4" "#00BBDC" "#00B4F0" "#00A9FF" "#619CFF" "#9F8CFF" "#C77CFF" "#E36EF6" "#F564E3" "#FF61CC"
-# "#FF64B0" "#FF6C91")
 
-# figure 3b------
+# heatmap------
 column_col <- pancan_col[match(heatmap_cancer,cancer_type$Abbr)]
 heatmap.2(nmd_signature2 ,col=colfunc(15), trace = "none",dendrogram="row",Colv = F,
           labCol = FALSE, colsep=   colSeperate[-1],sepcolor="black")
 barplot(column_col )
-
-
-# p<-ggplot(data = data.frame(x=c("x","y"),y=c(10,20)),aes(x=x,y=y,fill=x))+geom_bar(stat = "identity")
-# pancan_col=unique(ggplot_build(p)$data[[1]]$colour)
-# [1] "#F8766D" "#ED813E" "#DE8C00" "#CD9600" "#B79F00" "#9DA700" "#7CAE00" "#49B500" "#00BA38" "#00BE67" "#00C08B"
-# [12] "#00C1A9" "#00BFC4" "#00BBDC" "#00B4F0" "#00A9FF" "#619CFF" "#9F8CFF" "#C77CFF" "#E36EF6" "#F564E3" "#FF61CC"
-# [23] "#FF64B0" "#FF6C91"
-
-# fill x  y PANEL group ymin ymax xmin xmax colour size linetype alpha
-# 1 #F8766D 1 10     1     1    0   10 0.55 1.45     NA  0.5        1    NA
-# 2 #00BFC4 2 20     1     2    0   20 1.55 2.45     NA  0.5        1    NA
-
 
 ## frequency of NMD mutations across cancers: boxplot-----------
 charts.data= table(pancan_mut_all[,c("sample","nmd.detail2")])
@@ -403,7 +345,6 @@ gene_df_add $Freq<- as.numeric(gene_df_add $Freq)
 
 # Figure. Distribution of NMD-mutated genes in cancers-----
 ggplot(data = gene_df_add, aes(x = Var1,y=Freq))+ geom_bar(stat="identity") + labs(x="Number of cancer",y="Number of genes with NMD mutations in the given cancers")
-# ggplot(data = gene_df[gene_df$Freq>10,], aes(x = Var1,y=Freq))+ geom_bar(stat="identity") + labs(x="Number of cancer",y="Number of genes with NMD mutations in the given cancers")
 gene_df[gene_df$Var1,]
 # For transformed scales, binwidth applies to the transformed data.
 
@@ -412,7 +353,6 @@ gene_df <- table(pancan_mut_all[,c("cancer","gene")]$gene)
 gene_df <- cbind(data.frame(table(pancan_mut_all[pancan_mut_all$nmd.detail2==T,c("cancer","gene")]$gene)),data.frame(table(gene_df$gene)))
 gene_df <- gene_df[,c(1,2,4)]
 colnames(gene_df) <- c("gene","NMD.mutation","NMD.mutated.cancer")
-# ggplot(data = share_gene_cancer_table[1:500, ],aes(x=NMD.mutation,y=NMD.mutated.cancer)) +geom_point()
 
 # number of nmd mutations in each gene in each cancer------
 head(gene_df)
@@ -438,7 +378,6 @@ write.csv(gene_df,"data/table/gene_df.csv")
 # plot the expression of frequently NMD-mutated tumor genes-----
 gene_df$gene[which(gene_df$BRCA>5&gene_df$cancer_driver==T)]
 
-
 leader_nmd_gene <- data.frame(table(unique(pancan_mut_all[,c("sample","cancer_abbr")])[,"cancer_abbr"]))
 colnames(leader_nmd_gene) <- c("cancer","n_sample")
 leader_nmd_gene$leader <- NA
@@ -454,8 +393,6 @@ for(i in 1:nrow(leader_nmd_gene))
     leader_nmd_gene$leader[i] <- paste(m$mark,collapse = ", ")
   }
 }
-
-
 
 write.csv(leader_nmd_gene,"data/table/leader_nmd_gene_cancers.csv",row.names = F)
 
@@ -479,7 +416,6 @@ for(i in 1:2)
 gene_id$p_value.adj <- p.adjust(gene_id$p_value,method="BH")
 
 #--------------------------------------------------
-#--------------------------------------------------
 ##------ Mutation-level analysis ------##
 #--------------------------------------------------
 
@@ -495,52 +431,51 @@ length(unique(pancan_mut_all$sample))
 # [1] 3152
 
 # Expression analysis------
-# read file----
-load(file = "data/results/pancan_mut_classfied_with_quantileexpression.RData")
 
 ## rank the genes by the wt expression median-----
 pancan_mut_expression$wt_expression_rank <- NA
-table(unique(pancan_mut_expression[pancan_mut_expression$nmd.detail2==T,c("gene","cancer")])$cancer)
 
 pancan_mut_expression$wt_expression_rank <-NA
 order <- order( pancan_mut_expression$wt_expression_median,decreasing = F)
-n<- round(length(order)/10)+1
+n <- round(length(order)/10)+1
 pancan_mut_expression$wt_expression_rank[order] <- c(rep(1:9,each=n),rep(10,length(order)-9*n))
 rm(order)
 
 pancan_mut_expression$wt_expression_rank <- as.factor(pancan_mut_expression$wt_expression_rank)
 table(pancan_mut_expression$wt_expression_rank)
-write.csv(file = "panCan17_results/number_genes_each_group_10",x = table(pancan_mut_expression[pancan_mut_expression$nmd.detail2==T,c("cancer","wt_expression_rank")]))
+write.csv(file = "data/table/number_genes_each_group_10.csv",
+          x = table(pancan_mut_expression[pancan_mut_expression$nmd.detail2==T,
+                                          c("cancer","wt_expression_rank")]))
 
-
-#-------------------------------------------
-## Dependence on wild type expression-------
-#-------------------------------------------
-ggplot(data=pancan_mut_expression[(!is.na(pancan_mut_expression$wt_expression_rank))&
-                                      (pancan_mut_expression$nmd.detail2%in%c(T,F)),], 
-       aes(x=wt_expression_rank, y=quantile_expression,fill=nmd.detail2)) +
-  geom_boxplot( ) +
-  labs(y="Relative expression of variants",x = "Rank by median of wildtype expression")+
-  theme(legend.position = "bottom",legend.direction="horizontal",legend.title = element_blank()) +
-  scale_fill_discrete(labels=c("non-NMD mutation", "NMD mutation")) +
-  facet_wrap(~ cancer,ncol = 4)
-
-mean_group <-data.frame(cancer = rep(cancer_type$Cancer,each = 20),group = rep(1:10,24),NMD = rep(c(rep(F,10),rep(T,10)),12), mean = rep(0,240))
-for(ct in 1:nrow(cancer_type))
-{
-  for(i in 1:10)
-  {
-    mean_group$mean[mean_group$cancer==cancer_type$Cancer[ct]&mean_group$group==i&mean_group$NMD==T] <-  median(na.rm=T,pancan_mut_expression$quantile_expression[pancan_mut_expression$cancer==cancer_type$Cancer[ct]&pancan_mut_expression$wt_expression_rank==i&pancan_mut_expression$nmd.detail2==T])
-    mean_group$mean[mean_group$cancer==cancer_type$Cancer[ct]& mean_group$group==i&mean_group$NMD==F] <- 
-      median(na.rm=T,pancan_mut_expression$quantile_expression[pancan_mut_expression$cancer==cancer_type$Cancer[ct]&pancan_mut_expression$wt_expression_rank==i&pancan_mut_expression$nmd.detail2==F])
-    
-  }
-}
-mean_group$nan.index <- F
-mean_group$nan.index[which(is.na(mean_group$mean))] <- T
-mean_group$mean[is.na(mean_group$mean) ] <- 0
-mean_group$cancer_abbr <- cancer_type$Abbr[match(mean_group$cancer,cancer_type$Cancer)]
-write.csv(mean_group,file="PANCAN_results/figure2a_table.csv",row.names = F)
+# 
+# #-------------------------------------------
+# ## Dependence on wild type expression-------
+# #-------------------------------------------
+# ggplot(data=pancan_mut_expression[(!is.na(pancan_mut_expression$wt_expression_rank))&
+#                                       (pancan_mut_expression$nmd.detail2%in%c(T,F)),], 
+#        aes(x=wt_expression_rank, y=quantile_expression,fill=nmd.detail2)) +
+#   geom_boxplot( ) +
+#   labs(y="Relative expression of variants",x = "Rank by median of wildtype expression")+
+#   theme(legend.position = "bottom",legend.direction="horizontal",legend.title = element_blank()) +
+#   scale_fill_discrete(labels=c("non-NMD mutation", "NMD mutation")) +
+#   facet_wrap(~ cancer,ncol = 4)
+# 
+# mean_group <-data.frame(cancer = rep(cancer_type$Cancer,each = 20),group = rep(1:10,24),NMD = rep(c(rep(F,10),rep(T,10)),12), mean = rep(0,240))
+# for(ct in 1:nrow(cancer_type))
+# {
+#   for(i in 1:10)
+#   {
+#     mean_group$mean[mean_group$cancer==cancer_type$Cancer[ct]&mean_group$group==i&mean_group$NMD==T] <-  median(na.rm=T,pancan_mut_expression$quantile_expression[pancan_mut_expression$cancer==cancer_type$Cancer[ct]&pancan_mut_expression$wt_expression_rank==i&pancan_mut_expression$nmd.detail2==T])
+#     mean_group$mean[mean_group$cancer==cancer_type$Cancer[ct]& mean_group$group==i&mean_group$NMD==F] <- 
+#       median(na.rm=T,pancan_mut_expression$quantile_expression[pancan_mut_expression$cancer==cancer_type$Cancer[ct]&pancan_mut_expression$wt_expression_rank==i&pancan_mut_expression$nmd.detail2==F])
+#     
+#   }
+# }
+# mean_group$nan.index <- F
+# mean_group$nan.index[which(is.na(mean_group$mean))] <- T
+# mean_group$mean[is.na(mean_group$mean) ] <- 0
+# mean_group$cancer_abbr <- cancer_type$Abbr[match(mean_group$cancer,cancer_type$Cancer)]
+# write.csv(mean_group,file="data/table/figure2a_table.csv",row.names = F)
 
 # ~Comparing two Regression Lines-----
 # Test for the slope
@@ -610,28 +545,28 @@ write.csv(x = test.list,file = "panCan12_results/wilcoxTest_oneside_diff_FS_NM.c
 # linear regression analysis---------
 #-------------------------------------------
 # gene expression=tumout type+gene-specific effect+nmd effect+noise
-require(MASS)
-require(robustbase)
-library(caret)
-set.seed(123)
-inTrain <- createDataPartition(y =pancan_mut_expression$expression,
-                               ## the outcome data are needed
-                                 p = .75,
-                                ## The percentage of data in the training set
-                                 list = FALSE)
-                               ## The format of the results
-training <- pancan_mut_expression[ inTrain,]
-testing  <- pancan_mut_expression[-as.numeric(inTrain),]
-testing <- testing[testing$cancer_abbr!="UCEC",]
-nmd.mod1 = lmrob(quantile_expression ~  nmd.detail2 + wt_expression_median +cancer_abbr + cnv,
-                    data = training,fast.s.large.n = Inf)
-normalised_expression <- predict(object = nmd.robmod1,newdata = testing[testing$cancer_abbr!="UCEC",])
-cor(na.omit(cbind(normalised_expression,testing$expression[testing$cancer_abbr!="UCEC"])))
-cor(na.omit(cbind(testing$wt_expression_median[testing$cancer_abbr!="UCEC"],testing$expression[testing$cancer_abbr!="UCEC"])))
-
-cancer_coeff <- summary(nmd.mod1)$coefficient
-
-testing$quantile_expression-testing$wt_expression_median-testing$cancer_abbr
+# require(MASS)
+# require(robustbase)
+# library(caret)
+# set.seed(123)
+# inTrain <- createDataPartition(y =pancan_mut_expression$expression,
+#                                ## the outcome data are needed
+#                                  p = .75,
+#                                 ## The percentage of data in the training set
+#                                  list = FALSE)
+#                                ## The format of the results
+# training <- pancan_mut_expression[ inTrain,]
+# testing  <- pancan_mut_expression[-as.numeric(inTrain),]
+# testing <- testing[testing$cancer_abbr!="UCEC",]
+# nmd.mod1 = lmrob(quantile_expression ~  nmd.detail2 + wt_expression_median +cancer_abbr + cnv,
+#                     data = training,fast.s.large.n = Inf)
+# normalised_expression <- predict(object = nmd.robmod1,newdata = testing[testing$cancer_abbr!="UCEC",])
+# cor(na.omit(cbind(normalised_expression,testing$expression[testing$cancer_abbr!="UCEC"])))
+# cor(na.omit(cbind(testing$wt_expression_median[testing$cancer_abbr!="UCEC"],testing$expression[testing$cancer_abbr!="UCEC"])))
+# 
+# cancer_coeff <- summary(nmd.mod1)$coefficient
+# 
+# testing$quantile_expression-testing$wt_expression_median-testing$cancer_abbr
 
 #--------------------------------------------------
 # TP53 ---------------------------------------------
@@ -674,24 +609,21 @@ wilcox.test(Expression~nmd.detail2,data = tp53, alternative = "greater")
 #---------------------------------------
 
 table(pancan_mut_expression$nmd.detail2)
-#   FALSE    TRUE 
-# 1202212   73855 
-gene_id = "NF1" # TP53
+gene_id = "NF1" 
 
 # TP53 in all cancer types  
-tp53 <- pancan_mut_expression[pancan_mut_expression$gene == "NF1",]
-tp53$effect[grep("FS",tp53$effect)] <- "Frameshift indels"
-tp53$effect[grep("IF",tp53$effect)] <- "Inframe indels"
-tp53$cancer <- as.factor(tp53$cancer)
-colnames(tp53)[colnames(tp53)=="expression"] <- "Expression"
-tp53$Expression <- as.numeric(tp53$Expression)
-tp53$effect[tp53$effect%in%c("NM","Frameshift indels")] <-"FS/NM"
+NF1 <- pancan_mut_expression[pancan_mut_expression$gene == "NF1",]
+NF1$effect[grep("FS",NF1$effect)] <- "Frameshift indels"
+NF1$effect[grep("IF",NF1$effect)] <- "Inframe indels"
+NF1$cancer <- as.factor(NF1$cancer)
+colnames(NF1)[colnames(NF1)=="expression"] <- "Expression"
+NF1$Expression <- as.numeric(NF1$Expression)
+NF1$effect[NF1$effect%in%c("NM","Frameshift indels")] <-"FS/NM"
 
-wilcox.test(Expression~nmd.detail2,data = tp53, alternative = "greater")
-
+wilcox.test(Expression~nmd.detail2,data = NF1, alternative = "greater")
 
 gene_df <- 
-  top_tsg <- c("KDM6A","ARID1A","TP53","RB1")
+  top_tsg <- c("KDM6A","ARID1A","NF","RB1")
 NMDtarget <- pancan_mut[pancan_mut_expression$gene %in% top_tsg & pancan_mut_expression$cancer=="BLCA",] 
 ggplot(aes(x = nmd.detail2,fill=(nmd.detail2),y=as.numeric(expression)), data=NMDtarget[(!is.na(NMDtarget$expression))&(!is.na(NMDtarget$nmd.detail2)),] ) + geom_violin(alpha=0.4) + 
   geom_jitter(aes(col = nmd.detail2,height = 0,alpha=0.7))+
@@ -713,10 +645,10 @@ colnames(U_pan) <- c("gene","cancer","U","Z_score","nmd_mut_expression_mean","bg
 U_pan  <- as.data.frame(U_pan )
 U_pan[,c("gene","cancer")] <- unique(mut[mut$nmd.detail2==T,c("gene","cancer_abbr")])
 U_pan <- U_pan[(!is.na(U_pan$gene)&(!is.na(U_pan$cancer))),]
-U_pan2 <- U_pan # calculate for pan cancer: compare NMD mutation and non-NMD mutation
-U_pan3 <- U_pan ## compare non-NMD and WT expression
+# U_pan2 <- U_pan # calculate for pan cancer: compare NMD mutation and non-NMD mutation
+# U_pan3 <- U_pan ## compare non-NMD and WT expression
 pancan_mut_expression$expression<-as.numeric(pancan_mut_expression$expression)
-for(i in 28648:nrow(U_pan))
+for(i in 1:nrow(U_pan))
 {
   gene_id <- U_pan$gene[i]
   cancer <- U_pan$cancer[i]
@@ -748,37 +680,37 @@ for(i in 28648:nrow(U_pan))
         }
         
       }
-      if(table(m$nmd.detail2)["TRUE"]>0 & table(m$nmd.detail2)["FALSE"]>0)
-      {
-        results = wilcox.test(as.numeric(m$expression[m$nmd.detail2==F]), expression_wt)
-        U_pan3[i,1:6] <- c( gene_id,cancer,results$statistic, results$statistic/(length(m$expression[m$nmd.detail2==F])* length(expression_wt)),
-                            mean(as.numeric(m$expression[m$nmd.detail2==F])), mean(expression_wt))
-        U_pan3[i,7] <-results$p.value
-        U_pan3[i,8:9] <-c (length(m$expression[m$nmd.detail2==F]), length(expression_wt))
-        if(any(expression_wt>0))
-        {
-          if(length(expression_wt)>2){
-            rl <- shapiro.test(expression_wt)
-            U_pan3[i,10] <- rl$p.value
-          }
-          
-        }
-      }
+      # if(table(m$nmd.detail2)["TRUE"]>0 & table(m$nmd.detail2)["FALSE"]>0)
+      # {
+      #   results = wilcox.test(as.numeric(m$expression[m$nmd.detail2==F]), expression_wt)
+      #   U_pan3[i,1:6] <- c( gene_id,cancer,results$statistic, results$statistic/(length(m$expression[m$nmd.detail2==F])* length(expression_wt)),
+      #                       mean(as.numeric(m$expression[m$nmd.detail2==F])), mean(expression_wt))
+      #   U_pan3[i,7] <-results$p.value
+      #   U_pan3[i,8:9] <-c (length(m$expression[m$nmd.detail2==F]), length(expression_wt))
+      #   if(any(expression_wt>0))
+      #   {
+      #     if(length(expression_wt)>2){
+      #       rl <- shapiro.test(expression_wt)
+      #       U_pan3[i,10] <- rl$p.value
+      #     }
+      #     
+      #   }
+      # }
       
       
     }
     
-    if(table(m$nmd.detail2)["TRUE"]>0 & table(m$nmd.detail2)["FALSE"]>0)
-    {
-      
-      results = wilcox.test(as.numeric(m$expression[m$nmd.detail2==T]), as.numeric(m$expression[m$nmd.detail2==F]) ,alternative = "less")
-      U_pan2[i,1:6] <- c( gene_id,cancer,results$statistic, results$statistic/(length(m$expression[m$nmd.detail2==T])* length(m$expression[m$nmd.detail2==F])),
-                          mean(as.numeric(m$expression[m$nmd.detail2==T])), mean(as.numeric(m$expression[m$nmd.detail2==F])))
-      U_pan2[i,7] <-results$p.value
-      U_pan2[i,8:9] <-c (length(m$expression[m$nmd.detail2==T]), length(m$expression[m$nmd.detail2==F]))
-      
-      
-    }
+    # if(table(m$nmd.detail2)["TRUE"]>0 & table(m$nmd.detail2)["FALSE"]>0)
+    # {
+    #   
+    #   results = wilcox.test(as.numeric(m$expression[m$nmd.detail2==T]), as.numeric(m$expression[m$nmd.detail2==F]) ,alternative = "less")
+    #   U_pan2[i,1:6] <- c( gene_id,cancer,results$statistic, results$statistic/(length(m$expression[m$nmd.detail2==T])* length(m$expression[m$nmd.detail2==F])),
+    #                       mean(as.numeric(m$expression[m$nmd.detail2==T])), mean(as.numeric(m$expression[m$nmd.detail2==F])))
+    #   U_pan2[i,7] <-results$p.value
+    #   U_pan2[i,8:9] <-c (length(m$expression[m$nmd.detail2==T]), length(m$expression[m$nmd.detail2==F]))
+    #   
+    #   
+    # }
     
   }
 }
@@ -787,36 +719,36 @@ for(i in 3:10)
 {
   U_pan[,i] <- as.numeric(U_pan[,i])
 }
-for(i in 3:10)
-{
-  U_pan2[,i] <- as.numeric(U_pan2[,i])
-}
-for(i in 3:10)
-{
-  U_pan3[,i] <- as.numeric(U_pan3[,i])
-}
+# for(i in 3:10)
+# {
+#   U_pan2[,i] <- as.numeric(U_pan2[,i])
+# }
+# for(i in 3:10)
+# {
+#   U_pan3[,i] <- as.numeric(U_pan3[,i])
+# }
 
 # ~write csv of U-----
-write.csv(U_pan,file = "PANCAN/results/U_pan.RData",row.names = F)
-write.csv(U_pan2,file = "PANCAN/results/U_pan2.RData",row.names = F)
-write.csv(U_pan3,file = "PANCAN/results/U_pan3.RData",row.names = F)
+write.csv(U_pan,file = "data/results/U_pan.RData",row.names = F)
+# write.csv(U_pan2,file = "PANCAN/results/U_pan2.RData",row.names = F)
+# write.csv(U_pan3,file = "PANCAN/results/U_pan3.RData",row.names = F)
 
 # these genes have more than 1 mutations in 
-gene.universe<- U_pan2$Z_score
-names(gene.universe) <- U_pan2$gene
-gene.universe <- gene.universe[!is.na(gene.universe)]
-GOdata <- new("topGOdata", ontology ="BP", allGenes = gene.universe, geneSel = function(x) x<0.2, 
-              description = "Test", annot = annFUN.org, mapping = "org.Hs.eg.db", ID = "symbol")
-resultFisher <- runTest(GOdata, algorithm = "classic", statistic = "fisher")
-resultKS.elim <- runTest(GOdata, algorithm = "elim", statistic = "ks")
-resultweight <- runTest(GOdata, algorithm = "weight", statistic = "fisher")
+# gene.universe<- U_pan2$Z_score
+# names(gene.universe) <- U_pan2$gene
+# gene.universe <- gene.universe[!is.na(gene.universe)]
+# GOdata <- new("topGOdata", ontology ="BP", allGenes = gene.universe, geneSel = function(x) x<0.2, 
+#               description = "Test", annot = annFUN.org, mapping = "org.Hs.eg.db", ID = "symbol")
+# resultFisher <- runTest(GOdata, algorithm = "classic", statistic = "fisher")
+# resultKS.elim <- runTest(GOdata, algorithm = "elim", statistic = "ks")
+# resultweight <- runTest(GOdata, algorithm = "weight", statistic = "fisher")
 
-table <- GenTable(GOdata, classicFisher = resultFisher,weightfisher = resultweight, topNodes = 500 ,numChar=100)
+# table <- GenTable(GOdata, classicFisher = resultFisher,weightfisher = resultweight, topNodes = 500 ,numChar=100)
 # write.csv(table,file = "pan_cancer_results/twoBackgroundDiff_GOEA.csv")               
-showSigOfNodes(GOdata, score(resultweight), firstSigNodes = 5, useInfo = 'all')
+# showSigOfNodes(GOdata, score(resultweight), firstSigNodes = 5, useInfo = 'all')
 
 ## Which genes are more frequently NMD mutated?------
-write.csv(U_pan, file = "panCan12_results/MWW_table_pancancer20160917.csv",row.names = F)
+# write.csv(U_pan, file = "panCan12_results/MWW_table_pancancer20160917.csv",row.names = F)
 
 
 U_pan$cancer_gene <-NA
@@ -867,14 +799,14 @@ ggplot(aes(x = nmd.detail2,fill=nmd.detail2,y=expression), data=NMDtarget ) + ge
 #                  labels=rep(c(cancer_type$Cancer),each=2))
 
 # ~ Supplementary Figure 9. (B) . Expression levels of 25 genes with z scores (NMD vs non-NMD) < 0.1. -----
-gene_id = paste(U_pan2$gene,U_pan2$cancer)[U_pan2$n_nmd_mut>2&U_pan2$Z_score<0.1]
-gene_id <- gene_id[!is.na(gene_id )]
-NMDtarget <- pancan_mut_expression[paste(pancan_mut_expression$gene,pancan_mut_expression$cancer_abbr) %in% gene_id[1:25],] 
-NMDtarget$z_score <-round (U_pan2$Z_score[match(paste(NMDtarget$gene,NMDtarget$cancer_abbr),paste(U_pan2$gene,U_pan2$cancer))],2)
+# gene_id = paste(U_pan2$gene,U_pan2$cancer)[U_pan2$n_nmd_mut>2&U_pan2$Z_score<0.1]
+# gene_id <- gene_id[!is.na(gene_id )]
+# NMDtarget <- pancan_mut_expression[paste(pancan_mut_expression$gene,pancan_mut_expression$cancer_abbr) %in% gene_id[1:25],] 
+# NMDtarget$z_score <-round (U_pan2$Z_score[match(paste(NMDtarget$gene,NMDtarget$cancer_abbr),paste(U_pan2$gene,U_pan2$cancer))],2)
 
 # NMDtarget$z_score <-round (U_pan$Z_score[match(paste(NMDtarget$gene,NMDtarget$cancer),paste(U_pan$gene,U_pan$cancer))],2)
-NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$cancer_abbr,"z score=",NMDtarget$z_score)
-NMDtarget <- NMDtarget[!is.na(NMDtarget$z_score)&!is.na(NMDtarget$nmd.detail2),]
+# NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$cancer_abbr,"z score=",NMDtarget$z_score)
+# NMDtarget <- NMDtarget[!is.na(NMDtarget$z_score)&!is.na(NMDtarget$nmd.detail2),]
 
 # NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$cancer,"z score=",NMDtarget$z_score)
 # NMDtarget <- NMDtarget[!is.na(NMDtarget$z_score),]
@@ -911,9 +843,9 @@ c(sum(U_pan$n_nmd_mut[which(U_pan$cancer=="unclassified")]),
                                                           sum(U_pan$n_nmd_mut[which(U_pan$cancer=="TSG")])))
 fisher.test(matrix(c(84,55,32,40),byrow = T,ncol = 2),alternative = "greater")
 
-ggplot(U_pan2, aes(x = Z_score,fill  = smg, col  = smg)) +
-  geom_density(alpha=0.5) + labs (x = "z score (NMD vs non-NMD)", fill = "Significantly mutated genes",col = "Significantly mutated genes")+
-  theme(legend.position="bottom")
+# ggplot(U_pan2, aes(x = Z_score,fill  = smg, col  = smg)) +
+  # geom_density(alpha=0.5) + labs (x = "z score (NMD vs non-NMD)", fill = "Significantly mutated genes",col = "Significantly mutated genes")+
+  # theme(legend.position="bottom")
 
 
 ## some example 
@@ -947,42 +879,42 @@ ggplot(U_pan, aes(x = Z_score,fill  = smg, col  = smg)) +
   geom_vline(data=cdat, aes(xintercept=rating.mean,  colour=smg),
              linetype="dashed", size=1)
 
-gene_id = sng.list.geneId[sng.list.geneId %in%  U_pan2$gene_id]
-NMDtarget <- pancan_mut[pancan_mut_expression$gene %in% gene_id[1:25],] 
-NMDtarget$z_score <-round (U_pan2$Z_score[match(NMDtarget$gene,U_pan$gene_id)],2)
-NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$Hugo_Symbol,"z score=",NMDtarget$z_score)
+# gene_id = sng.list.geneId[sng.list.geneId %in%  U_pan2$gene_id]
+# # NMDtarget <- pancan_mut[pancan_mut_expression$gene %in% gene_id[1:25],] 
+# NMDtarget$z_score <-round (U_pan2$Z_score[match(NMDtarget$gene,U_pan$gene_id)],2)
+# NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$Hugo_Symbol,"z score=",NMDtarget$z_score)
 
-ggplot(aes(x = paste(cancer,nmd.detail2),fill=nmd.detail2,y=expression), data=NMDtarget ) + geom_boxplot(alpha=0.4) + 
-  geom_jitter(aes(col = nmd.detail2,height = 0),alpha=0.5)+ 
-  scale_colour_discrete(guide = FALSE) +scale_fill_discrete(guide = FALSE)+
-  labs(x="Cancers", y = "Expression level") +
-  scale_x_discrete(breaks=unique(paste(pancan_mut_expression$cancer,pancan_mut_expression$nmd.detail2)),
-                   labels=rep(c("BRCA","GBM","LUSC","OV","PRAD"),each=2))+facet_wrap(~ gene,ncol = 5) 
+# ggplot(aes(x = paste(cancer,nmd.detail2),fill=nmd.detail2,y=expression), data=NMDtarget ) + geom_boxplot(alpha=0.4) + 
+#   geom_jitter(aes(col = nmd.detail2,height = 0),alpha=0.5)+ 
+#   scale_colour_discrete(guide = FALSE) +scale_fill_discrete(guide = FALSE)+
+#   labs(x="Cancers", y = "Expression level") +
+#   scale_x_discrete(breaks=unique(paste(pancan_mut_expression$cancer,pancan_mut_expression$nmd.detail2)),
+#                    labels=rep(c("BRCA","GBM","LUSC","OV","PRAD"),each=2))+facet_wrap(~ gene,ncol = 5) 
 
-gene_id = sng.list.geneId[sng.list.geneId %in%  U_pan2$gene_id]
-NMDtarget <- pancan_mut[pancan_mut_expression$gene %in% gene_id[26:51],] 
-NMDtarget$z_score <-round (U_pan2$Z_score[match(NMDtarget$gene,U_pan$gene_id)],2)
-NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$Hugo_Symbol,"z score=",NMDtarget$z_score)
-
-ggplot(aes(x = paste(cancer,nmd.detail2),fill=nmd.detail2,y=expression), data=NMDtarget ) + geom_boxplot(alpha=0.4) + 
-  geom_jitter(aes(col = nmd.detail2,height = 0),alpha=0.5)+ 
-  scale_colour_discrete(guide = FALSE) +scale_fill_discrete(guide = FALSE)+
-  labs(x="Cancers", y = "Expression level") +
-  scale_x_discrete(breaks=unique(paste(pancan_mut_expression$cancer,pancan_mut_expression$nmd.detail2)),
-                   labels=rep(c("BRCA","GBM","LUSC","OV","PRAD"),each=2))+facet_wrap(~ gene,ncol = 5) 
-
-gene_id = sng.list.geneId[sng.list.geneId %in%  U_pan2$gene_id]
-NMDtarget <- pancan_mut[pancan_mut_expression$gene %in% gene_id[52:84],] 
-NMDtarget$z_score <-round (U_pan2$Z_score[match(NMDtarget$gene,U_pan$gene_id)],2)
-NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$Hugo_Symbol,"z score=",NMDtarget$z_score)
-
-ggplot(aes(x = paste(cancer,nmd.detail2),fill=nmd.detail2,y=expression), data=NMDtarget ) + geom_boxplot(alpha=0.4) + 
-  geom_jitter(aes(col = nmd.detail2,height = 0),alpha=0.5)+ 
-  theme(legend.position = "bottom")+
-  labs(x="Cancers", y = "Expression level",fill="NMD mutation",col="NMD mutation") +
-  scale_x_discrete(breaks=unique(paste(pancan_mut_expression$cancer,pancan_mut_expression$nmd.detail2)),
-                   labels=rep(c("BRCA","GBM","LUSC","OV","PRAD"),each=2))+facet_wrap(~ gene,ncol = 5) 
-
+# gene_id = sng.list.geneId[sng.list.geneId %in%  U_pan2$gene_id]
+# NMDtarget <- pancan_mut[pancan_mut_expression$gene %in% gene_id[26:51],] 
+# NMDtarget$z_score <-round (U_pan2$Z_score[match(NMDtarget$gene,U_pan$gene_id)],2)
+# NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$Hugo_Symbol,"z score=",NMDtarget$z_score)
+# 
+# ggplot(aes(x = paste(cancer,nmd.detail2),fill=nmd.detail2,y=expression), data=NMDtarget ) + geom_boxplot(alpha=0.4) + 
+#   geom_jitter(aes(col = nmd.detail2,height = 0),alpha=0.5)+ 
+#   scale_colour_discrete(guide = FALSE) +scale_fill_discrete(guide = FALSE)+
+#   labs(x="Cancers", y = "Expression level") +
+#   scale_x_discrete(breaks=unique(paste(pancan_mut_expression$cancer,pancan_mut_expression$nmd.detail2)),
+#                    labels=rep(c("BRCA","GBM","LUSC","OV","PRAD"),each=2))+facet_wrap(~ gene,ncol = 5) 
+# 
+# gene_id = sng.list.geneId[sng.list.geneId %in%  U_pan2$gene_id]
+# NMDtarget <- pancan_mut[pancan_mut_expression$gene %in% gene_id[52:84],] 
+# NMDtarget$z_score <-round (U_pan2$Z_score[match(NMDtarget$gene,U_pan$gene_id)],2)
+# NMDtarget$gene <- paste(NMDtarget$gene,NMDtarget$Hugo_Symbol,"z score=",NMDtarget$z_score)
+# 
+# ggplot(aes(x = paste(cancer,nmd.detail2),fill=nmd.detail2,y=expression), data=NMDtarget ) + geom_boxplot(alpha=0.4) + 
+#   geom_jitter(aes(col = nmd.detail2,height = 0),alpha=0.5)+ 
+#   theme(legend.position = "bottom")+
+#   labs(x="Cancers", y = "Expression level",fill="NMD mutation",col="NMD mutation") +
+#   scale_x_discrete(breaks=unique(paste(pancan_mut_expression$cancer,pancan_mut_expression$nmd.detail2)),
+#                    labels=rep(c("BRCA","GBM","LUSC","OV","PRAD"),each=2))+facet_wrap(~ gene,ncol = 5) 
+# 
 
 # detect possible wrong mutations------
 #  get flanking sequencing-----

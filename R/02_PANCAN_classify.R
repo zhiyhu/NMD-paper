@@ -1,4 +1,4 @@
-source("00_PANCAN_function.R")
+source("R/00_PANCAN_function.R")
 
 # Classify mutations into NMD and non-NMD
 
@@ -53,7 +53,6 @@ has.anno <- which(pancan_mut$geneId %in% cds37$geneid)
 pancan_mut <- pancan_mut[has.anno,]; rm(has.anno)
 nrow(pancan_mut) 
 # [1] 1343298
-save(pancan_mut,file="data/results/pancan_mut_before_assess")
 # see if the gene has correct CDS annotation: start with start codon, end to stop codon
 pancan_mut$build  <- 37
 
@@ -71,8 +70,8 @@ pancan_mut <- pancan_mut[pancan_mut$geneId %in% assess$gene[assess$assess==0],]
 nrow(pancan_mut)
 # [1]  1338241
 
-save(pancan_mut,file="data/results/pancan_mut_for_classify")
-write.csv(assess,"data/results/gene_assess_tb.csv",row.names = F)
+# save(pancan_mut,file="data/results/pancan_mut_for_classify")
+# write.csv(assess,"data/results/gene_assess_tb.csv",row.names = F)
 rm(assess)
 
 # Classify the mutated sequences into NMD T or F----------
@@ -88,11 +87,11 @@ for(i in sample)
     nmd.rl[i,] <- classify.nmd(pancan_mut[i,])
   else nmd.rl[,"note"] <- "can't find geneID in txdb"
 }
-save(nmd.rl,file="data/data/nmd_classified")
+save(nmd.rl,file="data/results/nmd_classified")
 
 pancan_mut <- cbind(pancan_mut,nmd.rl[,-3])
 pancan_mut <- pancan_mut[pancan_mut$cancer %in% cancer_type$Cancer[order(cancer_type$Number_total_mutations,decreasing = T)][1:24],]
-save(pancan_mut,file="data/data/pancan_mut_classified")
+save(pancan_mut,file="data/results/pancan_mut_classified")
 
 colnames(pancan_mut)[which(colnames(pancan_mut)=="mut_nmd")] <- "nmd.detail2"
 pancan_mut$nmd.detail2[grep("splice site mutated",pancan_mut$note)] <- NA
@@ -143,8 +142,8 @@ prop.table(table(pancan_mut$have.ptc))
 
 # Calculate the wildtype expression----------------------
 #---------------------------------------------------------
-load("data/pancan_mut_matrix.RData")
-load("data/pancan_rnaseq.RData")
+# load("data/results/pancan_mut_matrix.RData")
+# load("data/pancan_rnaseq.RData")
 load("data/pan_cancer_mut_anno_table.RData")
 mut_tb <- mut_tb[rownames(mut_tb) %in%  pancan_mut$sample, colnames(mut_tb) %in% pancan_mut$gene]
 dim(mut_tb)
@@ -222,8 +221,6 @@ for(i in 1:nrow(pancan_mut)) # calculate the mean/median wt expression and the q
 }
 pancan_mut_expression <- pancan_mut
 any(is.na(pancan_mut$wt_expression_median))
-save(pancan_mut_expression,file = "data/results/pancan_mut_classfied_with_quantileexpression.RData")
-
 
 ### pancan_mut2: samples without RNA-seq data-----
 # ~Classify the mutations into NMD and non-NMD----------
@@ -293,7 +290,7 @@ for(i in 1:nrow(pancan_mut2))
 }
 
 pancan_mut2 <- cbind(pancan_mut2,nmd.rl[1:nrow(pancan_mut2),-3])
-save(pancan_mut2,file="panCan17_results/pancan_mut2_classified.RData")
+save(pancan_mut2,file="data/results/pancan_mut2_classified.RData")
 
 sum(is.na(pancan_mut2$mut_nmd))
 # [1] 222834
@@ -326,7 +323,6 @@ pancan_mut2$expression <- NA
 pancan_mut_all <- rbind(pancan_mut[,match(colnames(pancan_mut2),colnames(pancan_mut))],pancan_mut2)
 head(pancan_mut_all)
 
-
 pancan_mut_all[pancan_mut_all$effect=="Frame_Shift_Del","effect"] <- "FSD"
 pancan_mut_all$effect[pancan_mut_all$effect=="Frame_Shift_Ins"] <- "FSI"
 pancan_mut_all$effect[pancan_mut_all$effect=="In_Frame_Del"] <- "IFD"
@@ -336,7 +332,7 @@ pancan_mut_all$effect[pancan_mut_all$effect=="Nonsense_Mutation"] <- "NM"
 sum(grepl("single exon",pancan_mut_all$note)&pancan_mut_all$nmd.detail2==T,na.rm = T)
 # [1] 0
 
-save(pancan_mut_all,file="panCan17_results/pancan_mut_all_classified.RData")
+save(pancan_mut_all,file="data/results/pancan_mut_all_classified.RData")
 
 pancan_mut_all$quantile_expression <- pancan_mut_expression$quantile_expression[match(paste(pancan_mut_all$gene,pancan_mut_all$sample),
                                                                                       paste(pancan_mut_expression$gene,pancan_mut_expression$sample))]

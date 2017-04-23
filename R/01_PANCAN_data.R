@@ -5,7 +5,9 @@ getwd()
 setwd(dir = "../")
 
 # unzip the compressed files
-unzip(zipfile = "data/PANCAN_Xena.zip", exdir = "data/")
+unzip(zipfile = "data/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes.zip", exdir = "data/")
+unzip(zipfile = "data/PANCAN_HiSeqV2.zip", exdir = "data/")
+unzip(zipfile = "data/PANCAN_mutation.zip", exdir = "data/")
 pancan_mut <- read.delim( "data/PANCAN_mutation",header = T,as.is = T)
 pancan_mut_all <- pancan_mut
 pancan_seq <- read.delim( "data/PANCAN_HiSeqV2",header = T,as.is = T)
@@ -81,4 +83,6 @@ rm(deplicated.mut.sample.gene)
 
 pancan_mut2 <- pancan_mut_all[!(apply(pancan_mut_all[,1:5],1,paste,collapse=" ") %in% apply(pancan_mut[,1:5],1,paste,collapse=" ")),]
 rm(e2s)
-save(file = "01_PANCAN_data_enviroment.RData",compression_level = 9)
+save.image(file = "R/01_PANCAN_data_enviroment.RData",compress = T)
+
+
