@@ -17,7 +17,7 @@ Zhiyuan Hu1,2,3, Christopher Yau3,4\* and Ahmed Ashour Ahmed1,2\*
 
 Herein the repo contains the raw data and coding to reproduce the results in the manusript:
 
-Z. Hu, C. Yau and A. Ahmed (2017) *A pan-cancer genome-wide analysis reveals tumour dependencies by induction of non-sense mediated decay* (Under review).
+Z. Hu, C. Yau and A. Ahmed (2017) *A pan-cancer genome-wide analysis reveals tumour dependencies by induction of non-sense mediated decay* (accepted).
 
 While some mutations can introduce premature termination codons (PTCs) into genes, nonsense mediated decay (NMD) can detect these PTCs and then eliminate the abnormal transcripts. PTCs and NMD play important roles in genetic diseases and cancers.
 
@@ -74,7 +74,7 @@ In total, eight R scripts are included in the `R` subdirectory. You can run them
 
 A manuscript detailing our work has been submitted for publication and a bioRxiv submission is in preparation:
 
-Z. Hu, C. Yau and A. Ahmed (2017) *A pan-cancer genome-wide analysis reveals tumour dependencies by induction of non-sense mediated decay* (Under review).
+Z. Hu, C. Yau and A. Ahmed (2017) *A pan-cancer genome-wide analysis reveals tumour dependencies by induction of non-sense mediated decay* (accepted).
 
 
 
