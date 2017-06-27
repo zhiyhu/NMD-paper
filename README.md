@@ -72,9 +72,9 @@ In total, eight R scripts are included in the `R` subdirectory. You can run them
 
 ## Citation
 
-A manuscript detailing our work has been accepted by Nature Communications:
+A manuscript detailing our work has been published by Nature Communications:
 
-Z. Hu, C. Yau and A. Ahmed (2017) *A pan-cancer genome-wide analysis reveals tumour dependencies by induction of non-sense mediated decay* (accepted).
+Z. Hu, C. Yau and A. Ahmed (2017) A pan-cancer genome-wide analysis reveals tumour dependencies by induction of nonsense-mediated decay. *Nat. Commun*. 8, 15943 [doi: 10.1038/ncomms15943](https://www.nature.com/articles/ncomms15943) (2017).
 
 
 
